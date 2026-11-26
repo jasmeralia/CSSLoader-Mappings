@@ -51,3 +51,24 @@ const mappings = allClasses.reduce((acc, cur) => {
 ```
 
 + webpack_mappings.py
+
+### Inlined classes in build 1795567705
+
+The Steam beta inlines some CSS class strings in its JavaScript. Those strings
+are absent from the module exports used to capture the snapshot. The snapshot
+retains three previous module IDs for manually verified classes so the
+generator can follow their existing translation histories.
+
+| Previous module ID | Evidence in the Steam UI bundles |
+| --- | --- |
+| `79614` | The library artwork component in `chunk~5ad53110ba.js` uses the same image class arguments and wrapper conditions as the earlier `sp.js` component. These identify Container, GreyBackground, Image, Visibility and Visible. |
+| `84194` | The recent-games background rule in `chunk~5ad53110ba.css` retains the BigArtMode override, brightness filter and transition timings from `sp.css`. |
+| `18402` | In `chunk~1fc66b8190.css`, the absolute-positioned focus root and its high z-index precede the ring with the four focus animations, matching the earlier rules in `sp.css`. |
+
+Regenerate the class maps from the repository root in this order.
+
+```sh
+python3 webpack_id_mappings.py
+python3 classname_mappings.py
+python3 backport_classname_mappings.py
+```
